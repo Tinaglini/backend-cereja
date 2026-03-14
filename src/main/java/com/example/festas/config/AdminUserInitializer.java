@@ -5,7 +5,10 @@ import com.example.festas.entity.TipoPapel;
 import com.example.festas.entity.Usuario;
 import com.example.festas.repository.RoleRepository;
 import com.example.festas.repository.UsuarioRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class AdminUserInitializer {
+
+    private static final Logger log = LoggerFactory.getLogger(AdminUserInitializer.class);
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -23,30 +28,30 @@ public class AdminUserInitializer {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Value("${admin.default.email}")
+    private String adminEmail;
+
+    @Value("${admin.default.password}")
+    private String adminPassword;
+
     @Bean
     public CommandLineRunner createAdminUser() {
         return args -> {
-            // Verificar se já existe um usuário admin
-            if (usuarioRepository.findByLogin("admin@festas.com") == null) {
-                System.out.println("=== CRIANDO USUÁRIO ADMIN PADRÃO ===");
+            if (usuarioRepository.findByLogin(adminEmail) == null) {
+                log.info("Criando usuário admin padrão: {}", adminEmail);
 
                 Usuario admin = new Usuario();
-                admin.setLogin("admin@festas.com");
-                admin.setSenha(passwordEncoder.encode("admin123"));
+                admin.setLogin(adminEmail);
+                admin.setSenha(passwordEncoder.encode(adminPassword));
 
-                // Adicionar role ADMIN
                 Role roleAdmin = roleRepository.findByNome(TipoPapel.ROLE_ADMIN)
                         .orElseThrow(() -> new RuntimeException("Role ROLE_ADMIN não encontrada"));
                 admin.getRoles().add(roleAdmin);
 
                 usuarioRepository.save(admin);
-
-                System.out.println("✅ Usuário admin criado:");
-                System.out.println("   Email: admin@festas.com");
-                System.out.println("   Senha: admin123");
-                System.out.println("   Role: ROLE_ADMIN");
+                log.info("Usuário admin criado com sucesso.");
             } else {
-                System.out.println("✅ Usuário admin já existe");
+                log.debug("Usuário admin já existe, ignorando criação.");
             }
         };
     }

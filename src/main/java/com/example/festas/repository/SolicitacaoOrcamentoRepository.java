@@ -12,11 +12,13 @@ import java.util.List;
 @Repository
 public interface SolicitacaoOrcamentoRepository extends JpaRepository<SolicitacaoOrcamento, Long> {
 
-    // Métodos automáticos (mínimo 2 por repository)
     List<SolicitacaoOrcamento> findByStatusOrcamento(String statusOrcamento);
+
     List<SolicitacaoOrcamento> findByDataEventoAfter(LocalDate data);
 
-    // Consulta JPQL personalizada adicional
     @Query("SELECT s FROM SolicitacaoOrcamento s WHERE s.cliente.id = :clienteId ORDER BY s.dataCriacao DESC")
     List<SolicitacaoOrcamento> findByClienteIdOrderByDataCriacaoDesc(@Param("clienteId") Long clienteId);
+
+    @Query("SELECT s FROM SolicitacaoOrcamento s JOIN s.cliente c JOIN c.usuario u WHERE u.login = :login ORDER BY s.dataCriacao DESC")
+    List<SolicitacaoOrcamento> findByClienteUsuarioLogin(@Param("login") String login);
 }

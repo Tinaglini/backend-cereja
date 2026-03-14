@@ -1,9 +1,11 @@
 package com.example.festas.service;
 
 import com.example.festas.entity.TipoEvento;
+import com.example.festas.exception.ResourceNotFoundException;
 import com.example.festas.repository.TipoEventoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,22 +24,23 @@ public class TipoEventoService {
         return tipoEventoRepository.findById(id);
     }
 
+    @Transactional
     public TipoEvento salvar(TipoEvento tipoEvento) {
         return tipoEventoRepository.save(tipoEvento);
     }
 
+    @Transactional
     public TipoEvento atualizar(Long id, TipoEvento tipoEvento) {
-        Optional<TipoEvento> tipoExistente = tipoEventoRepository.findById(id);
-        if (tipoExistente.isPresent()) {
-            tipoEvento.setId(id);
-            return salvar(tipoEvento);
-        }
-        throw new RuntimeException("Tipo de evento não encontrado com ID: " + id);
+        tipoEventoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tipo de evento não encontrado com ID: " + id));
+        tipoEvento.setId(id);
+        return salvar(tipoEvento);
     }
 
+    @Transactional
     public void deletar(Long id) {
         if (!tipoEventoRepository.existsById(id)) {
-            throw new RuntimeException("Não é possível deletar tipo de evento inexistente");
+            throw new ResourceNotFoundException("Tipo de evento não encontrado com ID: " + id);
         }
         tipoEventoRepository.deleteById(id);
     }

@@ -1,6 +1,7 @@
 package com.example.festas.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,6 +18,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -25,6 +27,9 @@ public class SecurityConfigurations {
     @Autowired
     private SecurityFilter securityFilter;
 
+    @Value("${cors.allowed-origins}")
+    private String allowedOriginsRaw;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -32,44 +37,28 @@ public class SecurityConfigurations {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Permitir OPTIONS (CORS preflight)
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // Endpoints públicos
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
-                        // CLIENTES - Apenas ADMIN (endpoints sensíveis)
                         .requestMatchers("/api/clientes/**").hasRole("ADMIN")
-
-                        // ENDEREÇOS - Apenas ADMIN (conforme solicitado)
                         .requestMatchers("/api/enderecos/**").hasRole("ADMIN")
 
-                        // TEMAS - GET público (sem autenticação), Gestão apenas ADMIN
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/temas/**")
-                        .permitAll() // Qualquer pessoa pode ver temas
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/temas/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/temas/**").hasRole("ADMIN")
                         .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/temas/**").hasRole("ADMIN")
                         .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/temas/**").hasRole("ADMIN")
 
-                        // TIPOS DE EVENTO - GET público (sem autenticação), Gestão apenas ADMIN
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/tipos-evento/**")
-                        .permitAll() // Qualquer pessoa pode ver tipos de evento
-                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/tipos-evento/**")
-                        .hasRole("ADMIN")
-                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/tipos-evento/**")
-                        .hasRole("ADMIN")
-                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/tipos-evento/**")
-                        .hasRole("ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/tipos-evento/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/tipos-evento/**").hasRole("ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/tipos-evento/**").hasRole("ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/tipos-evento/**").hasRole("ADMIN")
 
-                        // GERENCIAMENTO DE USUÁRIOS - Apenas ADMIN
                         .requestMatchers("/api/admin/usuarios/**").hasRole("ADMIN")
-
-                        // SOLICITAÇÕES - Lógica complexa no controller (USER+ADMIN com validação de
-                        // propriedade)
                         .requestMatchers("/api/solicitacoes/**").hasAnyRole("USER", "ADMIN")
 
-                        // Qualquer outra requisição requer autenticação
                         .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -79,24 +68,18 @@ public class SecurityConfigurations {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOriginPatterns(Arrays.asList(
-                "http://localhost:*", // Qualquer porta localhost (desenvolvimento)
-                "http://18.231.120.168", // IP da AWS atual
-                "http://18.231.120.168:*", // AWS com qualquer porta
-                "http://54.232.5.122", // IP antigo
-                "http://54.232.5.122:*"));
-        configuration.setAllowedMethods(Arrays.asList(
-                "GET",
-                "POST",
-                "PUT",
-                "DELETE",
-                "OPTIONS",
-                "PATCH"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setAllowCredentials(true);
-        configuration.setExposedHeaders(Arrays.asList(
+        List<String> origins = Arrays.asList(allowedOriginsRaw.split(","));
+        configuration.setAllowedOriginPatterns(origins);
+
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        configuration.setAllowedHeaders(Arrays.asList(
                 "Authorization",
-                "Content-Type"));
+                "Content-Type",
+                "Accept",
+                "Origin",
+                "X-Requested-With"));
+        configuration.setAllowCredentials(true);
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

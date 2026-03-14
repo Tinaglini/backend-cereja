@@ -1,9 +1,11 @@
 package com.example.festas.service;
 
 import com.example.festas.entity.Cliente;
+import com.example.festas.exception.ResourceNotFoundException;
 import com.example.festas.repository.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,29 +24,28 @@ public class ClienteService {
         return clienteRepository.findById(id);
     }
 
+    @Transactional
     public Cliente salvar(Cliente cliente) {
-        // REGRA DE NEGÓCIO COMPLEXA: Verificar status do cadastro antes de persistir
         if (cliente.getTelefone() == null || cliente.getTelefone().trim().isEmpty()) {
             cliente.setStatusCadastro("INCOMPLETO");
         } else {
             cliente.setStatusCadastro("COMPLETO");
         }
-
         return clienteRepository.save(cliente);
     }
 
+    @Transactional
     public Cliente atualizar(Long id, Cliente cliente) {
-        Optional<Cliente> clienteExistente = clienteRepository.findById(id);
-        if (clienteExistente.isPresent()) {
-            cliente.setId(id);
-            return salvar(cliente);
-        }
-        throw new RuntimeException("Cliente não encontrado com ID: " + id);
+        clienteRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado com ID: " + id));
+        cliente.setId(id);
+        return salvar(cliente);
     }
 
+    @Transactional
     public void deletar(Long id) {
         if (!clienteRepository.existsById(id)) {
-            throw new RuntimeException("Não é possível deletar cliente inexistente");
+            throw new ResourceNotFoundException("Cliente não encontrado com ID: " + id);
         }
         clienteRepository.deleteById(id);
     }
