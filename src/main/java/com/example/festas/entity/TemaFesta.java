@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -26,7 +26,7 @@ public class TemaFesta {
     private Boolean ativo;
 
     @ManyToMany(mappedBy = "temas")
-    @JsonIgnoreProperties("temas")
+    @JsonIgnore
     private List<SolicitacaoOrcamento> solicitacoes;
 
     // Getters and Setters

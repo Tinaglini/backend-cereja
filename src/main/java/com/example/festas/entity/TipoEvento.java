@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class TipoEvento {
     private Integer capacidadeMaxima;
 
     @OneToMany(mappedBy = "tipoEvento")
-    @JsonIgnoreProperties("tipoEvento")
+    @JsonIgnore
     private List<SolicitacaoOrcamento> solicitacoes;
 
     // Getters and Setters

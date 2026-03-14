@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.List;
 
@@ -36,7 +36,7 @@ public class Endereco {
     private String cep;
 
     @OneToMany(mappedBy = "endereco")
-    @JsonIgnoreProperties("endereco")
+    @JsonIgnore
     private List<SolicitacaoOrcamento> solicitacoes;
 
     // Getters and Setters
