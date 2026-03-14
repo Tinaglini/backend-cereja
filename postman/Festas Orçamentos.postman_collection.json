@@ -1,0 +1,133 @@
+{
+  "info": {
+    "name": "Festas Or\u00e7amentos",
+    "_postman_id": "b5a9a0b6-1a42-4b40-b2cd-000000000001",
+    "description": "Cole\u00e7\u00e3o de testes da API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Criar Cliente",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/clientes",
+          "host": [
+            "http",
+            "localhost:8080",
+            "api",
+            "clientes"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"nome\": \"Maria Teste\", \"telefone\": \"+5511888888888\"}"
+        }
+      }
+    },
+    {
+      "name": "Criar Tema",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/temas",
+          "host": [
+            "http",
+            "localhost:8080",
+            "api",
+            "temas"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"nome\": \"Branco e Dourado\"}"
+        }
+      }
+    },
+    {
+      "name": "Criar Or\u00e7amento",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/solicitacoes",
+          "host": [
+            "http",
+            "localhost:8080",
+            "api",
+            "solicitacoes"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"cliente\": {\"id\": 1}, \"tema\": {\"id\": 1}, \"local\": {\"rua\": \"Rua das Flores, 123\", \"bairro\": \"Centro\", \"cidade\": \"S\\u00e3o Paulo\", \"cep\": \"01000-000\", \"complemento\": \"Sal\\u00e3o Azul\"}, \"dataEvento\": \"2025-09-20\", \"convidados\": 80, \"valorPretendido\": 6000.0, \"itens\": [{\"tipo\": \"MESA\", \"quantidade\": 10}, {\"tipo\": \"CADEIRA\", \"quantidade\": 80}]}"
+        }
+      }
+    },
+    {
+      "name": "Listar Clientes",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/clientes",
+          "host": [
+            "http",
+            "localhost:8080",
+            "api",
+            "clientes"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Listar Temas",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/temas",
+          "host": [
+            "http",
+            "localhost:8080",
+            "api",
+            "temas"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Listar Solicitações",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/solicitacoes",
+          "host": [
+            "http",
+            "localhost:8080",
+            "api",
+            "solicitacoes"
+          ]
+        }
+      }
+    }
+  ]
+}
