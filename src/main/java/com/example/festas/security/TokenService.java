@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TokenService implements ITokenService {
@@ -25,9 +27,14 @@ public class TokenService implements ITokenService {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + EXPIRATION_TIME_MS);
 
+        List<String> roles = usuario.getAuthorities().stream()
+                .map(authority -> authority.getAuthority())
+                .collect(Collectors.toList());
+
         return Jwts.builder()
                 .setIssuer("API Festas")
                 .setSubject(usuario.getUsername())
+                .claim("roles", roles)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(key, SignatureAlgorithm.HS256)
