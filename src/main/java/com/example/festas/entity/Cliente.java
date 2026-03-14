@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ public class Cliente {
     private Usuario usuario;
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("cliente")
+    @JsonIgnore
     private List<SolicitacaoOrcamento> solicitacoes;
 
     // Getters and Setters
