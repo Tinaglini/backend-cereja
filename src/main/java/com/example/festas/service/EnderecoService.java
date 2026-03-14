@@ -1,9 +1,11 @@
 package com.example.festas.service;
 
 import com.example.festas.entity.Endereco;
+import com.example.festas.exception.ResourceNotFoundException;
 import com.example.festas.repository.EnderecoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,22 +24,23 @@ public class EnderecoService {
         return enderecoRepository.findById(id);
     }
 
+    @Transactional
     public Endereco salvar(Endereco endereco) {
         return enderecoRepository.save(endereco);
     }
 
+    @Transactional
     public Endereco atualizar(Long id, Endereco endereco) {
-        Optional<Endereco> enderecoExistente = enderecoRepository.findById(id);
-        if (enderecoExistente.isPresent()) {
-            endereco.setId(id);
-            return salvar(endereco);
-        }
-        throw new RuntimeException("Endereço não encontrado com ID: " + id);
+        enderecoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Endereço não encontrado com ID: " + id));
+        endereco.setId(id);
+        return salvar(endereco);
     }
 
+    @Transactional
     public void deletar(Long id) {
         if (!enderecoRepository.existsById(id)) {
-            throw new RuntimeException("Não é possível deletar endereço inexistente");
+            throw new ResourceNotFoundException("Endereço não encontrado com ID: " + id);
         }
         enderecoRepository.deleteById(id);
     }

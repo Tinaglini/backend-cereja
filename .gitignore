@@ -1,0 +1,22 @@
+# Credenciais — NUNCA commitar
+.env
+
+# Java / Maven
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.log
+
+# IDE
+.idea/
+*.iml
+.eclipse/
+.settings/
+.project
+.classpath
+*.DS_Store
+
+# Build
+/build/

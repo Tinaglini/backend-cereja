@@ -1,9 +1,11 @@
 package com.example.festas.service;
 
 import com.example.festas.entity.TemaFesta;
+import com.example.festas.exception.ResourceNotFoundException;
 import com.example.festas.repository.TemaFestaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,26 +24,26 @@ public class TemaFestaService {
         return temaRepository.findById(id);
     }
 
+    @Transactional
     public TemaFesta salvar(TemaFesta tema) {
-        // REGRA DE NEGÓCIO: Definir como ativo por padrão antes de persistir
         if (tema.getAtivo() == null) {
             tema.setAtivo(true);
         }
         return temaRepository.save(tema);
     }
 
+    @Transactional
     public TemaFesta atualizar(Long id, TemaFesta tema) {
-        Optional<TemaFesta> temaExistente = temaRepository.findById(id);
-        if (temaExistente.isPresent()) {
-            tema.setId(id);
-            return salvar(tema);
-        }
-        throw new RuntimeException("Tema não encontrado com ID: " + id);
+        temaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tema não encontrado com ID: " + id));
+        tema.setId(id);
+        return salvar(tema);
     }
 
+    @Transactional
     public void deletar(Long id) {
         if (!temaRepository.existsById(id)) {
-            throw new RuntimeException("Não é possível deletar tema inexistente");
+            throw new ResourceNotFoundException("Tema não encontrado com ID: " + id);
         }
         temaRepository.deleteById(id);
     }
