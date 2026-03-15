@@ -68,4 +68,20 @@ public class TipoEventoController {
         List<TipoEvento> tiposEvento = tipoEventoService.buscarPorCapacidade(capacidade);
         return ResponseEntity.ok(tiposEvento);
     }
+
+    @GetMapping("/ativos")
+    public ResponseEntity<List<TipoEvento>> buscarAtivos() {
+        List<TipoEvento> tiposEvento = tipoEventoService.buscarAtivos();
+        return ResponseEntity.ok(tiposEvento);
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<TipoEvento> alternarStatus(@PathVariable Long id) {
+        try {
+            TipoEvento tipoEvento = tipoEventoService.alternarStatus(id);
+            return ResponseEntity.ok(tipoEvento);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

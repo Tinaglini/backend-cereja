@@ -24,6 +24,8 @@ public class TipoEvento {
 
     private Integer capacidadeMaxima;
 
+    private Boolean ativo;
+
     @OneToMany(mappedBy = "tipoEvento")
     @JsonIgnore
     private List<SolicitacaoOrcamento> solicitacoes;
@@ -43,7 +45,10 @@ public class TipoEvento {
     
     public Integer getCapacidadeMaxima() { return capacidadeMaxima; }
     public void setCapacidadeMaxima(Integer capacidadeMaxima) { this.capacidadeMaxima = capacidadeMaxima; }
-    
+
+    public Boolean getAtivo() { return ativo; }
+    public void setAtivo(Boolean ativo) { this.ativo = ativo; }
+
     public List<SolicitacaoOrcamento> getSolicitacoes() { return solicitacoes; }
     public void setSolicitacoes(List<SolicitacaoOrcamento> solicitacoes) { this.solicitacoes = solicitacoes; }
 }
