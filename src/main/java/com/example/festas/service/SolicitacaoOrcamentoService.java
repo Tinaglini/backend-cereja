@@ -25,7 +25,7 @@ public class SolicitacaoOrcamentoService {
 
     @Transactional(readOnly = true)
     public Optional<SolicitacaoOrcamento> buscarPorId(Long id) {
-        return solicitacaoRepository.findById(id);
+        return solicitacaoRepository.findByIdWithTemas(id);
     }
 
     @Transactional

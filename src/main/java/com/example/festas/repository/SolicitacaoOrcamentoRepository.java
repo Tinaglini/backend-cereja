@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SolicitacaoOrcamentoRepository extends JpaRepository<SolicitacaoOrcamento, Long> {
@@ -18,6 +19,9 @@ public interface SolicitacaoOrcamentoRepository extends JpaRepository<Solicitaca
 
     @Query("SELECT DISTINCT s FROM SolicitacaoOrcamento s LEFT JOIN FETCH s.temas ORDER BY s.dataCriacao DESC")
     List<SolicitacaoOrcamento> findAllWithTemas();
+
+    @Query("SELECT DISTINCT s FROM SolicitacaoOrcamento s LEFT JOIN FETCH s.temas WHERE s.id = :id")
+    Optional<SolicitacaoOrcamento> findByIdWithTemas(@Param("id") Long id);
 
     @Query("SELECT DISTINCT s FROM SolicitacaoOrcamento s LEFT JOIN FETCH s.temas WHERE s.cliente.id = :clienteId ORDER BY s.dataCriacao DESC")
     List<SolicitacaoOrcamento> findByClienteIdOrderByDataCriacaoDesc(@Param("clienteId") Long clienteId);
