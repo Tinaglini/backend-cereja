@@ -56,7 +56,7 @@ public class SecurityConfigurations {
                         .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/tipos-evento/**").hasRole("ADMIN")
                         .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/tipos-evento/**").hasRole("ADMIN")
 
-                        .requestMatchers("/api/admin/usuarios/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/solicitacoes/**").hasAnyRole("USER", "ADMIN")
 
                         .anyRequest().authenticated())
