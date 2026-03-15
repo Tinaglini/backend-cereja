@@ -12,4 +12,5 @@ public interface TipoEventoRepository extends JpaRepository<TipoEvento, Long> {
     // Métodos automáticos (mínimo 2 por repository)
     List<TipoEvento> findByNomeIgnoreCaseContaining(String nome);
     List<TipoEvento> findByCapacidadeMinimaLessThanEqualAndCapacidadeMaximaGreaterThanEqual(Integer min, Integer max);
+    List<TipoEvento> findByAtivo(Boolean ativo);
 }

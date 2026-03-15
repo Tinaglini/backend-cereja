@@ -26,6 +26,9 @@ public class TipoEventoService {
 
     @Transactional
     public TipoEvento salvar(TipoEvento tipoEvento) {
+        if (tipoEvento.getAtivo() == null) {
+            tipoEvento.setAtivo(true);
+        }
         return tipoEventoRepository.save(tipoEvento);
     }
 
@@ -51,5 +54,17 @@ public class TipoEventoService {
 
     public List<TipoEvento> buscarPorCapacidade(Integer capacidade) {
         return tipoEventoRepository.findByCapacidadeMinimaLessThanEqualAndCapacidadeMaximaGreaterThanEqual(capacidade, capacidade);
+    }
+
+    public List<TipoEvento> buscarAtivos() {
+        return tipoEventoRepository.findByAtivo(true);
+    }
+
+    @Transactional
+    public TipoEvento alternarStatus(Long id) {
+        TipoEvento tipoEvento = tipoEventoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tipo de evento não encontrado com ID: " + id));
+        tipoEvento.setAtivo(!Boolean.TRUE.equals(tipoEvento.getAtivo()));
+        return tipoEventoRepository.save(tipoEvento);
     }
 }
