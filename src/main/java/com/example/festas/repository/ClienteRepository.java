@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
@@ -18,4 +19,6 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     // Consulta JPQL personalizada (pelo menos 1 na aplicação toda)
     @Query("SELECT c FROM Cliente c WHERE c.telefone = :telefone")
     Cliente findByTelefone(@Param("telefone") String telefone);
+
+    Optional<Cliente> findByUsuarioLogin(String login);
 }
