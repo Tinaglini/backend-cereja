@@ -20,7 +20,7 @@ public class SolicitacaoOrcamentoService {
 
     @Transactional(readOnly = true)
     public List<SolicitacaoOrcamento> buscarTodos() {
-        return solicitacaoRepository.findAll();
+        return solicitacaoRepository.findAllWithTemas();
     }
 
     @Transactional(readOnly = true)
