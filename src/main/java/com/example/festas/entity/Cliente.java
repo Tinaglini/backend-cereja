@@ -19,7 +19,6 @@ public class Cliente {
     @NotBlank(message = "O campo nome é obrigatório")
     private String nome;
 
-    @NotBlank(message = "O campo telefone é obrigatório")
     private String telefone;
 
     private String statusCadastro; // COMPLETO ou INCOMPLETO

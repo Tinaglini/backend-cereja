@@ -1,5 +1,6 @@
 package com.example.festas.controller;
 
+import com.example.festas.entity.Cliente;
 import com.example.festas.entity.Usuario;
 import com.example.festas.entity.TipoPapel;
 import com.example.festas.exception.BadRequestException;
@@ -9,6 +10,7 @@ import com.example.festas.security.DadosAutenticacao;
 import com.example.festas.security.DadosRegistro;
 import com.example.festas.security.DadosTokenJWT;
 import com.example.festas.security.ITokenService;
+import com.example.festas.service.ClienteService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +44,9 @@ public class AuthController {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private ClienteService clienteService;
+
     @PostMapping("/login")
     public ResponseEntity<?> efetuarLogin(@RequestBody @Valid DadosAutenticacao dados) {
         var authenticationToken = new UsernamePasswordAuthenticationToken(dados.login(), dados.senha());
@@ -72,7 +77,13 @@ public class AuthController {
                 .orElseThrow(() -> new RuntimeException("Role ROLE_USER não encontrada no banco de dados"));
         novoUsuario.getRoles().add(roleUser);
 
-        usuarioRepository.save(novoUsuario);
+        Usuario usuarioSalvo = usuarioRepository.save(novoUsuario);
+
+        Cliente cliente = new Cliente();
+        cliente.setNome(dados.nome());
+        cliente.setUsuario(usuarioSalvo);
+        clienteService.salvar(cliente);
+
         log.info("Novo usuário registrado: {}", dados.email());
         return ResponseEntity.ok().build();
     }
