@@ -3,6 +3,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.math.BigDecimal;
@@ -24,6 +25,7 @@ public class SolicitacaoOrcamento {
     private Cliente cliente;
 
     @NotNull(message = "A data do evento é obrigatória")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate dataEvento;
 
     @NotNull(message = "O endereço é obrigatório")
