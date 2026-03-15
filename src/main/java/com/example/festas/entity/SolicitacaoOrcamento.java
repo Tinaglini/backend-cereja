@@ -50,7 +50,7 @@ public class SolicitacaoOrcamento {
 
     private LocalDateTime dataCriacao;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "solicitacao_tema",
             joinColumns = @JoinColumn(name = "solicitacao_id"),
