@@ -61,4 +61,8 @@ public class ClienteService {
     public List<Cliente> buscarPorStatus(String status) {
         return clienteRepository.findByStatusCadastro(status);
     }
+
+    public Optional<Cliente> buscarPorUsuarioLogin(String login) {
+        return clienteRepository.findByUsuarioLogin(login);
+    }
 }

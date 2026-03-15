@@ -1,7 +1,9 @@
 package com.example.festas.controller;
 
+import com.example.festas.entity.Cliente;
 import com.example.festas.entity.SolicitacaoOrcamento;
 import com.example.festas.entity.Usuario;
+import com.example.festas.service.ClienteService;
 import com.example.festas.service.SolicitacaoOrcamentoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,9 @@ public class SolicitacaoOrcamentoController {
 
     @Autowired
     private SolicitacaoOrcamentoService solicitacaoService;
+
+    @Autowired
+    private ClienteService clienteService;
 
     @GetMapping
     public ResponseEntity<List<SolicitacaoOrcamento>> buscarTodos(Authentication authentication) {
@@ -59,7 +64,13 @@ public class SolicitacaoOrcamentoController {
     }
 
     @PostMapping
-    public ResponseEntity<SolicitacaoOrcamento> salvar(@Valid @RequestBody SolicitacaoOrcamento solicitacao) {
+    public ResponseEntity<SolicitacaoOrcamento> salvar(@Valid @RequestBody SolicitacaoOrcamento solicitacao,
+            Authentication authentication) {
+        String login = authentication.getName();
+        Cliente cliente = clienteService.buscarPorUsuarioLogin(login)
+                .orElseThrow(() -> new com.example.festas.exception.BadRequestException(
+                        "Nenhum perfil de cliente encontrado para o usuário autenticado. Finalize seu cadastro antes de solicitar um orçamento."));
+        solicitacao.setCliente(cliente);
         try {
             SolicitacaoOrcamento solicitacaoSalva = solicitacaoService.salvar(solicitacao);
             return ResponseEntity.status(HttpStatus.CREATED).body(solicitacaoSalva);

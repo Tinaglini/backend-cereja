@@ -18,7 +18,6 @@ public class SolicitacaoOrcamento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "O cliente é obrigatório")
     @ManyToOne
     @JoinColumn(name = "cliente_id")
     @JsonIgnoreProperties("solicitacoes")
