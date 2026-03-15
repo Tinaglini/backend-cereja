@@ -16,9 +16,9 @@ public interface SolicitacaoOrcamentoRepository extends JpaRepository<Solicitaca
 
     List<SolicitacaoOrcamento> findByDataEventoAfter(LocalDate data);
 
-    @Query("SELECT s FROM SolicitacaoOrcamento s WHERE s.cliente.id = :clienteId ORDER BY s.dataCriacao DESC")
+    @Query("SELECT DISTINCT s FROM SolicitacaoOrcamento s LEFT JOIN FETCH s.temas WHERE s.cliente.id = :clienteId ORDER BY s.dataCriacao DESC")
     List<SolicitacaoOrcamento> findByClienteIdOrderByDataCriacaoDesc(@Param("clienteId") Long clienteId);
 
-    @Query("SELECT s FROM SolicitacaoOrcamento s JOIN s.cliente c JOIN c.usuario u WHERE u.login = :login ORDER BY s.dataCriacao DESC")
+    @Query("SELECT DISTINCT s FROM SolicitacaoOrcamento s LEFT JOIN FETCH s.temas JOIN s.cliente c JOIN c.usuario u WHERE u.login = :login ORDER BY s.dataCriacao DESC")
     List<SolicitacaoOrcamento> findByClienteUsuarioLogin(@Param("login") String login);
 }
