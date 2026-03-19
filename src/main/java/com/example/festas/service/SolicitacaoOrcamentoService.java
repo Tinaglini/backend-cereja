@@ -48,6 +48,9 @@ public class SolicitacaoOrcamentoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada com ID: " + id));
         solicitacao.setId(id);
         solicitacao.setDataCriacao(existente.getDataCriacao());
+        if (solicitacao.getCliente() == null) {
+            solicitacao.setCliente(existente.getCliente());
+        }
         return salvar(solicitacao);
     }
 
