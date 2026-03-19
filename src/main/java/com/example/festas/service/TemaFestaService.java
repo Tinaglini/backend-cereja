@@ -55,4 +55,16 @@ public class TemaFestaService {
     public List<TemaFesta> buscarAtivos() {
         return temaRepository.findByAtivo(true);
     }
+
+    public List<TemaFesta> buscarPendentes() {
+        return temaRepository.findByAtivo(false);
+    }
+
+    @Transactional
+    public TemaFesta ativar(Long id) {
+        TemaFesta tema = temaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tema não encontrado com ID: " + id));
+        tema.setAtivo(true);
+        return temaRepository.save(tema);
+    }
 }

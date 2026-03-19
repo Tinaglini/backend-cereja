@@ -47,7 +47,8 @@ public class SecurityConfigurations {
                         .requestMatchers("/api/enderecos/**").hasRole("ADMIN")
 
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/temas/**").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/temas/**").hasRole("ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/temas/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.PATCH, "/api/temas/**").hasRole("ADMIN")
                         .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/temas/**").hasRole("ADMIN")
                         .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/temas/**").hasRole("ADMIN")
 
