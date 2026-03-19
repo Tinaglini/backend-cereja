@@ -1,8 +1,10 @@
 package com.example.festas.service;
 
+import com.example.festas.entity.Endereco;
 import com.example.festas.entity.SolicitacaoOrcamento;
 import com.example.festas.exception.BadRequestException;
 import com.example.festas.exception.ResourceNotFoundException;
+import com.example.festas.repository.EnderecoRepository;
 import com.example.festas.repository.SolicitacaoOrcamentoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,9 @@ public class SolicitacaoOrcamentoService {
 
     @Autowired
     private SolicitacaoOrcamentoRepository solicitacaoRepository;
+
+    @Autowired
+    private EnderecoRepository enderecoRepository;
 
     @Transactional(readOnly = true)
     public List<SolicitacaoOrcamento> buscarTodos() {
@@ -46,12 +51,24 @@ public class SolicitacaoOrcamentoService {
     public SolicitacaoOrcamento atualizar(Long id, SolicitacaoOrcamento solicitacao) {
         SolicitacaoOrcamento existente = solicitacaoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada com ID: " + id));
-        solicitacao.setId(id);
-        solicitacao.setDataCriacao(existente.getDataCriacao());
-        if (solicitacao.getCliente() == null) {
-            solicitacao.setCliente(existente.getCliente());
+
+        existente.setDataEvento(solicitacao.getDataEvento());
+        existente.setQuantidadeConvidados(solicitacao.getQuantidadeConvidados());
+        existente.setPrecisaMesasCadeiras(solicitacao.getPrecisaMesasCadeiras());
+        existente.setValorPretendido(solicitacao.getValorPretendido());
+        existente.setStatusOrcamento(solicitacao.getStatusOrcamento());
+        existente.setTemas(solicitacao.getTemas());
+        existente.setTipoEvento(solicitacao.getTipoEvento());
+
+        // endereco tem CascadeType.ALL — carregar do banco pelo ID para evitar
+        // sobrescrever o registro existente com campos nulos (objeto raso do frontend)
+        if (solicitacao.getEndereco() != null && solicitacao.getEndereco().getId() != null) {
+            Endereco endereco = enderecoRepository.findById(solicitacao.getEndereco().getId())
+                    .orElse(existente.getEndereco());
+            existente.setEndereco(endereco);
         }
-        return salvar(solicitacao);
+
+        return solicitacaoRepository.save(existente);
     }
 
     @Transactional
