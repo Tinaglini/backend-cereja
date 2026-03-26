@@ -28,4 +28,7 @@ public interface SolicitacaoOrcamentoRepository extends JpaRepository<Solicitaca
 
     @Query("SELECT DISTINCT s FROM SolicitacaoOrcamento s LEFT JOIN FETCH s.temas JOIN s.cliente c JOIN c.usuario u WHERE u.login = :login ORDER BY s.dataCriacao DESC")
     List<SolicitacaoOrcamento> findByClienteUsuarioLogin(@Param("login") String login);
+
+    @Query("SELECT DISTINCT s FROM SolicitacaoOrcamento s LEFT JOIN FETCH s.temas JOIN s.cliente c JOIN c.usuario u WHERE s.statusOrcamento = :status AND u.login = :login ORDER BY s.dataCriacao DESC")
+    List<SolicitacaoOrcamento> findByStatusOrcamentoAndClienteUsuarioLogin(@Param("status") String status, @Param("login") String login);
 }

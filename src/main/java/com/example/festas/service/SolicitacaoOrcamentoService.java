@@ -39,9 +39,8 @@ public class SolicitacaoOrcamentoService {
             throw new BadRequestException("Não é possível criar solicitação sem associar a um cliente");
         }
 
-        if (solicitacao.getStatusOrcamento() == null) {
-            solicitacao.setStatusOrcamento("PENDENTE");
-        }
+        solicitacao.setStatusOrcamento("PENDENTE");
+        solicitacao.setId(null);
         solicitacao.setDataCriacao(LocalDateTime.now());
 
         return solicitacaoRepository.save(solicitacao);
@@ -96,6 +95,11 @@ public class SolicitacaoOrcamentoService {
                         && s.getCliente().getUsuario() != null
                         && s.getCliente().getUsuario().getLogin().equals(emailUsuario))
                 .orElse(false);
+    }
+
+    @Transactional(readOnly = true)
+    public List<SolicitacaoOrcamento> buscarPorStatusEUsuario(String status, String emailUsuario) {
+        return solicitacaoRepository.findByStatusOrcamentoAndClienteUsuarioLogin(status, emailUsuario);
     }
 
     @Transactional(readOnly = true)

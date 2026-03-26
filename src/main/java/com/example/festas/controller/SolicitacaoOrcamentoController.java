@@ -101,7 +101,16 @@ public class SolicitacaoOrcamentoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+    public ResponseEntity<?> deletar(@PathVariable Long id, Authentication authentication) {
+        Usuario usuario = (Usuario) authentication.getPrincipal();
+        boolean isAdmin = usuario.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!isAdmin && !solicitacaoService.pertenceAoUsuario(id, usuario.getUsername())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Você só pode deletar suas próprias solicitações");
+        }
+
         try {
             solicitacaoService.deletar(id);
             return ResponseEntity.noContent().build();
@@ -111,8 +120,18 @@ public class SolicitacaoOrcamentoController {
     }
 
     @GetMapping("/status")
-    public ResponseEntity<List<SolicitacaoOrcamento>> buscarPorStatus(@RequestParam String status) {
-        List<SolicitacaoOrcamento> solicitacoes = solicitacaoService.buscarPorStatus(status);
+    public ResponseEntity<List<SolicitacaoOrcamento>> buscarPorStatus(@RequestParam String status,
+            Authentication authentication) {
+        Usuario usuario = (Usuario) authentication.getPrincipal();
+        boolean isAdmin = usuario.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        List<SolicitacaoOrcamento> solicitacoes;
+        if (isAdmin) {
+            solicitacoes = solicitacaoService.buscarPorStatus(status);
+        } else {
+            solicitacoes = solicitacaoService.buscarPorStatusEUsuario(status, usuario.getUsername());
+        }
         return ResponseEntity.ok(solicitacoes);
     }
 
@@ -122,20 +141,15 @@ public class SolicitacaoOrcamentoController {
         boolean isAdmin = usuario.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
-        List<SolicitacaoOrcamento> solicitacoes = solicitacaoService.buscarPorCliente(clienteId);
-
-        // Se não for admin, verificar se está buscando suas próprias solicitações
         if (!isAdmin) {
-            // Verificar se pelo menos uma solicitação pertence ao usuário
-            boolean pertenceAoUsuario = solicitacoes.stream()
-                    .anyMatch(s -> solicitacaoService.pertenceAoUsuario(s.getId(), usuario.getUsername()));
-
-            if (!pertenceAoUsuario && !solicitacoes.isEmpty()) {
+            Optional<Cliente> clienteDoUsuario = clienteService.buscarPorUsuarioLogin(usuario.getUsername());
+            if (clienteDoUsuario.isEmpty() || !clienteDoUsuario.get().getId().equals(clienteId)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body("Você só pode visualizar suas próprias solicitações");
             }
         }
 
+        List<SolicitacaoOrcamento> solicitacoes = solicitacaoService.buscarPorCliente(clienteId);
         return ResponseEntity.ok(solicitacoes);
     }
 }
